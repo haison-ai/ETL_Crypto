@@ -1,0 +1,27 @@
+[project]
+name = "etl-crypto"
+version = "0.1.0"
+description = "ETL_crypto on aws!"
+authors = [
+    {name = "haison-ai",email = "hurrutiam@unal.edu.co"}
+]
+readme = "README.md"
+requires-python = ">=3.12.3"
+dependencies = [
+    "boto3 (>=1.40.31,<2.0.0)",
+    "pyspark (>=4.0.1,<5.0.0)",
+    "dotenv (>=0.9.9,<0.10.0)",
+    "pytest (>=8.4.2,<9.0.0)",
+    "logging (>=0.4.9.6,<0.5.0.0)",
+    "pandas (>=2.3.2,<3.0.0)",
+    "pre-commit (>=4.3.0,<5.0.0)",
+    "pyarrow (>=21.0.0,<22.0.0)",
+    "black (>=25.1.0,<26.0.0)",
+    "isort (>=6.0.1,<7.0.0)",
+    "ruff (>=0.13.0,<0.14.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
