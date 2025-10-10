@@ -1,15 +1,50 @@
-This repository contains a personal ETL (Extract, Transform, Load) project that I developed to demonstrate my skills in data engineering and cloud technologies.
+🚀 ETL Data Pipeline Project
 
-The pipeline is designed to be scalable, cost-efficient, and production-ready, following industry practices:
+🧠 A personal end-to-end ETL (Extract, Transform, Load) project designed to showcase my skills in data engineering, cloud computing, and DevOps automation.
 
-Extraction: Collecting raw data from APIs or files and storing it in Amazon S3.
+🌍 Overview
 
-Transformation: Cleaning, enriching, and structuring the data with PySpark, optimized into Parquet format.
+This project demonstrates how to build a scalable, cost-efficient, and production-ready data pipeline, following modern Data Engineering best practices.
 
-Loading: Moving the processed data into Amazon Redshift for analytics and reporting.
+It simulates a real-world environment — from raw data ingestion to automated orchestration — using AWS services, PySpark, and Terraform.
 
-Orchestration: Using Apache Airflow (Docker) to schedule, automate, and monitor pipeline runs.
+🔄 Pipeline Phases
+🧲 1. Extraction
 
-Infrastructure as Code: Provisioning resources with Terraform, ensuring reproducibility and cloud-native workflows.
+Collects raw data from public APIs (e.g., Alpha Vantage) or CSV files.
 
-The purpose of this project is to showcase my ability to build modern data pipelines that can evolve from local development to a cloud-based production setup. It reflects my learning journey in data engineering, DevOps practices, and cloud computing while keeping costs low through AWS Free Tier services.
+Stores the data in the Amazon S3 Raw Zone with proper date partitioning.
+
+Handles retries, request throttling, and basic validation.
+
+🧪 2. Transformation
+
+Cleans, enriches, and structures data using PySpark.
+
+Converts raw JSON into optimized Parquet format.
+
+Implements schema enforcement, deduplication, and normalization.
+
+Writes processed data into the Curated Zone of S3.
+
+🏗️ 3. Loading
+
+Loads curated data into Amazon Redshift using the COPY command.
+
+Supports incremental updates and automatic schema mapping.
+
+Enables analytical queries with SQL or BI tools.
+
+🕹️ 4. Orchestration
+
+Apache Airflow manages the workflow through a Dockerized environment.
+
+Each ETL task runs as a DAG with logging, alerting, and retry policies.
+
+Airflow UI provides complete visibility and monitoring.
+
+☁️ 5. Infrastructure as Code
+
+All cloud resources (S3, Redshift, IAM, VPC) are provisioned with Terraform.
+
+Ensures reproducible, automated, and version-controlled deployments.
