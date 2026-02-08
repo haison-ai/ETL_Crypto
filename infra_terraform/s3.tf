@@ -1,4 +1,5 @@
-resource "aws_s3_bucket" "example" {
+# Create an S3 bucket for the data landing zone
+resource "aws_s3_bucket" "data_landing_zone" {
   bucket = "data-landing-etl"
 
   tags = {
@@ -7,3 +8,12 @@ resource "aws_s3_bucket" "example" {
   }
 }
 
+# Create an S3 bucket for the data curated zone
+resource "aws_s3_bucket" "data_curated_zone" {
+  bucket = "data-curated-etl"
+
+  tags = {
+    Name        = "My bucket"
+    Environment = "Dev"
+  }
+}
