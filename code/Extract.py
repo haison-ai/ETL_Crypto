@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 import requests
 import os
-import datetime
+from datetime import datetime
 import boto3
 from botocore.exceptions import ClientError
 import logging
@@ -26,22 +26,25 @@ class Extract():
     Class responsible for extracting and processing financial data from APIs.
     Handles data retrieval, local storage, and S3 upload operations.
     """
-    def __init__(self, file_name, api_url, path=None, bucket_name=None, aws_region=None, self_data = None):
+    def __init__(self, extraction_date=None, api_url=None, path=None, bucket_name=None, aws_region=None, self_data = None):
         self.bucket_name = bucket_name or os.getenv("BUCKET_NAME")
         self.aws_region = aws_region or os.getenv("AWS_REGION")
         self.path = path
         self.data = self_data
         self.api_url = api_url
-        self.file_name = file_name
+        self.extraction_date = extraction_date
 
+        # Format the extraction date for partitioning
+        now = datetime.now()
+        hour_ex = now.strftime("%H-%M")
+        dt = datetime.strptime(self.extraction_date, "%Y-%m-%d")
+        self.partition_path = f"year={dt.year}/month={dt.month}/day={dt.day:02d}/"
+        self.file_name = f"raw/{self.partition_path}/data_{hour_ex}.json"
         project_root = Path(__file__).resolve().parent.parent #root directory
-
         data_folder = project_root / "data"
-
-        self.path = data_folder / self.path
+        self.path = data_folder / path / self.partition_path
         self.path.mkdir(parents=True, exist_ok=True)
             
-        
         if not self.bucket_name:
             raise ValueError("No bucket name")
         
@@ -68,14 +71,16 @@ class Extract():
         if self.data is None:
             logger.error("No data to save")
             return False
-        else:
-            try:
-                file_path = self.path / self.file_name
-                with file_path.open("w", encoding="utf-8") as f:
-                    json.dump(self.data, f, indent=4)
-            except OSError as e:
-                logger.error(f"Error creating folder")
-                raise
+        try:
+            only_file_name = Path(self.file_name).name
+            file_path = self.path / only_file_name
+            with file_path.open("w", encoding="utf-8") as f:
+                json.dump(self.data, f, indent=4)
+            logger.info(f"File '{self.file_name}' saved to '{self.path}'.")
+            return True
+        except OSError as e:
+            logger.error(f"Error creating folder")
+            raise
  
         
     # Method to upload data in S3 bucket
@@ -105,6 +110,8 @@ class Extract():
     
 
 if __name__ == '__main__':
-    extra = Extract("data.json", f"https://www.alphavantage.co/query?function=HISTORICAL_OPTIONS&symbol=IBM&date=2017-11-15&apikey={os.getenv("API_KEY")}", "data_raw")
+    date = "2026-02-09"
+    extra = Extract(date, f"https://www.alphavantage.co/query?function=HISTORICAL_OPTIONS&symbol=IBM&date=2017-11-15&apikey={os.getenv('API_KEY')}", "data_raw")
+    extra.fetch_data_api()
     extra.save_to_local()
 
