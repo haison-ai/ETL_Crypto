@@ -1,14 +1,14 @@
 #Import libraries.
 import json
-from dotenv import load_dotenv
-from pathlib import Path
-import requests
+import logging
 import os
 from datetime import datetime
-import boto3
-from botocore.exceptions import ClientError
-import logging
+from pathlib import Path
 
+import boto3
+import requests
+from botocore.exceptions import ClientError
+from dotenv import load_dotenv
 
 load_dotenv() # take env variables
 
