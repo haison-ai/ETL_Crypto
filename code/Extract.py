@@ -1,8 +1,8 @@
-# Import libraries.
+# Import libraries
 import json
-import time
 import logging
 import os
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -90,14 +90,14 @@ class Extract:
     def save_to_local(self) -> str:
         if self.data is None:
             logger.error("No data to save")
-            return False
+            return f"{False}"
         try:
             only_file_name = Path(self.file_name).name
             file_path = self.path / only_file_name
             with file_path.open("w", encoding="utf-8") as f:
                 json.dump(self.data, f, indent=4)
             logger.info(f"File '{self.file_name}' saved to '{self.path}'.")
-            return True
+            return f"{True}"
         except OSError as e:
             logger.error(f"Error creating folder {e}")
             raise
@@ -109,7 +109,7 @@ class Extract:
         # Connect with the API
         if self.data is None:
             logger.error("No data to upload")
-            return False
+            return f"{False}"
 
         # try to upload the file into s#
         try:
@@ -121,11 +121,11 @@ class Extract:
             logger.info(
                 f"File '{self.file_name}' uploaded to bucket '{self.bucket_name}'."
             )
-            return True
+            return f"{True}"
 
         except ClientError as e:
             logger.error(f"client error: {e}")
-            return False
+            return f"{False}"
 
 
 if __name__ == "__main__":
