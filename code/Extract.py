@@ -31,31 +31,39 @@ class Extract:
 
     def __init__(
         self,
-        extraction_date=None,
-        api_url=None,
-        path=None,
-        bucket_name=None,
-        aws_region=None,
+        extraction_date: str | None = None,
+        api_url: str | None = None,
+        path: str | None = None,
+        bucket_name: str | None = None,
+        aws_region: str | None = None,
         self_data=None,
-        coin_name=None,
+        coin_name: str | None = None,
     ):
+        if not extraction_date:
+            extraction_date = datetime.now().strftime("%Y-%m-%d")
+        if not api_url:
+            raise ValueError("api_url is required")
+        if not coin_name:
+            raise ValueError("coin_name is required")
+        if not path:
+            raise ValueError("path is required")
+
         self.bucket_name = bucket_name or os.getenv("BUCKET_NAME")
         self.aws_region = aws_region or os.getenv("AWS_REGION")
-        self.path = path
+        self.path: Path | None = None
         self.data = self_data
         self.api_url = api_url
         self.extraction_date = extraction_date
         self.coin_name = coin_name
 
-        # Format the extraction date for partitioning
         now = datetime.now()
         current_time = now.strftime("%H-%M-%S")
         dt = datetime.strptime(self.extraction_date, "%Y-%m-%d")
-        self.partition_path = f"year={dt.year}/month={dt.month}/day={dt.day:02d}/"
+        self.partition_path = f"year={dt.year}/month={dt.month:02d}/day={dt.day:02d}/"
         self.file_name = (
             f"raw/{self.partition_path}/data_{current_time}_{self.coin_name}.json"
         )
-        project_root = Path(__file__).resolve().parent.parent  # root directory
+        project_root = Path(__file__).resolve().parent.parent
         data_folder = project_root / "data"
         self.path = data_folder / path / self.partition_path
         self.path.mkdir(parents=True, exist_ok=True)
@@ -70,17 +78,14 @@ class Extract:
     def fetch_data_api(self):
         try:
             logger.debug(f"Attempting to connect to: {self.api_url}")
-            # We define the headers as per the documentation
             headers = {
                 "accept": "application/json",
-                "x-cg-demo-api-key": os.getenv(
-                    "API_KEY"
-                ),  # Fetches YOUR_API_KEY from .env
+                "x-cg-demo-api-key": os.getenv("API_KEY"),
             }
 
-            r = requests.get(self.api_url)
-            self.data = r.json()
+            r = requests.get(self.api_url, headers=headers)
             r.raise_for_status()
+            self.data = r.json()
             logger.info(f"Successfully received {len(r.content)} bytes")
             return self.data
         except Exception as e:
@@ -90,6 +95,9 @@ class Extract:
     def save_to_local(self) -> str:
         if self.data is None:
             logger.error("No data to save")
+            return f"{False}"
+        if self.path is None:
+            logger.error("No path set")
             return f"{False}"
         try:
             only_file_name = Path(self.file_name).name
