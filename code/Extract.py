@@ -23,7 +23,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)  # handle logs in my code
 
 
-class Extract:
+class ExtractDataApi:
     """
     Class responsible for extracting and processing financial data from APIs.
     Handles data retrieval, local storage, and S3 upload operations.
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     coins = ["bitcoin", "ethereum", "solana", "binancecoin", "cardano"]
     for coin in coins:
         api_url = f"https://api.coingecko.com/api/v3/coins/{coin}/market_chart?vs_currency=usd&days=30&interval=daily"
-        extra = Extract(date, api_url, "data_raw", coin_name=coin)
+        extra = ExtractDataApi(date, api_url, "data_raw", coin_name=coin)
         if extra.fetch_data_api():
             extra.save_to_local()
             extra.save_to_s3()

@@ -1,50 +1,55 @@
-🚀 ETL Data Pipeline Project
+# ETL Data Pipeline Project
 
-🧠 A personal end-to-end ETL (Extract, Transform, Load) project designed to showcase my skills in data engineering, cloud computing, and DevOps automation.
+A personal end-to-end ETL (Extract, Transform, Load) project designed to showcase my skills in data engineering, cloud computing, and DevOps automation.
 
-🌍 Overview
+## Overview
 
 This project demonstrates how to build a scalable, cost-efficient, and production-ready data pipeline, following modern Data Engineering best practices.
 
-It simulates a real-world environment — from raw data ingestion to automated orchestration — using AWS services, PySpark, and Terraform.
+It simulates a real-world environment — from raw data ingestion to analytics — using AWS services (S3, Lambda, MWAA, Glue, Athena) and Terraform.
 
-🔄 Pipeline Phases
-🧲 1. Extraction
+## Architecture
 
-Collects raw data from public APIs (e.g., Alpha Vantage) or CSV files.
+```
+API (CoinGecko) → S3 Raw Zone → Python Transform → S3 Silver Zone → Glue Crawler → Athena (SQL Analytics)
+```
 
-Stores the data in the Amazon S3 Raw Zone with proper date partitioning.
+## Pipeline Phases
 
-Handles retries, request throttling, and basic validation.
+### 1. Extraction
 
-🧪 2. Transformation
+- Collects raw data from CoinGecko API
+- Stores the data in Amazon S3 Raw Zone with date partitioning (year/month/day)
+- Handles retries, request throttling, and basic validation
 
-Cleans, enriches, and structures data using PySpark.
+### 2. Transformation
 
-Converts raw JSON into optimized Parquet format.
+- Cleans, enriches, and structures data using Python (pandas)
+- Converts raw JSON into optimized Parquet format
+- Implements schema enforcement and normalization
+- Writes processed data into S3 Silver Zone
 
-Implements schema enforcement, deduplication, and normalization.
+### 3. Catalog & Analytics
 
-Writes processed data into the Curated Zone of S3.
+- AWS Glue Crawler auto-discovers schema
+- AWS Lake Formation manages data catalog
+- Amazon Athena enables SQL queries on S3 data
 
-🏗️ 3. Loading
+### 4. Orchestration
 
-Loads curated data into Amazon Redshift using the COPY command.
+- AWS MWAA (Managed Workflows for Apache Airflow) manages the workflow
+- Each ETL task runs as a DAG with logging, alerting, and retry policies
+- Provides complete visibility and monitoring via Airflow UI
 
-Supports incremental updates and automatic schema mapping.
+### 5. Infrastructure as Code
 
-Enables analytical queries with SQL or BI tools.
+- All cloud resources (S3, MWAA, Glue, IAM) are provisioned with Terraform
+- Ensures reproducible, automated, and version-controlled deployments
 
-🕹️ 4. Orchestration
+## Technologies
 
-Apache Airflow manages the workflow through a Dockerized environment.
-
-Each ETL task runs as a DAG with logging, alerting, and retry policies.
-
-Airflow UI provides complete visibility and monitoring.
-
-☁️ 5. Infrastructure as Code
-
-All cloud resources (S3, Redshift, IAM, VPC) are provisioned with Terraform.
-
-Ensures reproducible, automated, and version-controlled deployments.
+- **Language:** Python
+- **Cloud:** AWS (S3, MWAA, Glue, Athena, Lake Formation)
+- **IaC:** Terraform
+- **Orchestration:** Apache Airflow (via AWS MWAA)
+- **Format:** JSON → Parquet
